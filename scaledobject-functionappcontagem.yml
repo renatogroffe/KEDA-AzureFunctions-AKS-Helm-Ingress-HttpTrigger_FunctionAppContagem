@@ -1,0 +1,18 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: functionappcontagem-scaledobject
+spec:
+  scaleTargetRef:
+    name: functionappcontagem-http
+  pollingInterval: 10
+  cooldownPeriod: 15
+  minReplicaCount: 4
+  maxReplicaCount: 20
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://<PROMETHEUS ADDRESS>:9090
+      metricName: http_requests_total
+      threshold: '100'
+      query: sum(rate(http_requests_total{deployment="my-deployment"}[2m]))
